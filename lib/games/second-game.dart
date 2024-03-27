@@ -268,7 +268,7 @@ class _SecondGameScreenState extends State<SecondGameScreen> {
                       top: 350,
                       child:  Container(
                         height: MediaQuery.of(context).size.height / 5,
-                        width: MediaQuery.of(context).size.width / 1,
+                        width: MediaQuery.of(context).size.width / 2,
                         decoration: const BoxDecoration(
                             image: DecorationImage(
                                 image: AssetImage(
@@ -281,8 +281,8 @@ class _SecondGameScreenState extends State<SecondGameScreen> {
                     ),
                     Positioned(
                       top: 10,
-                      right: 10,
-                      left: 10,
+                      right: 20,
+                      left: 1,
                       bottom: 40,
                       child: Image.asset("assets/images/you_win.png"),
                     ),
@@ -297,10 +297,11 @@ class _SecondGameScreenState extends State<SecondGameScreen> {
                               child: Image.asset(
                                 "assets/images/undo_button.png", height: 40,),
                               onTap: () {
-                                resetTimer();
+                                _gameInfo.initGame();
+                                goodMoves = 0;
+                                moves = 0;
                                 resetTimer();
                                 startTimer();
-                                _gameInfo.initGame();
                                 Navigator.pop(context);
                               },
                             ),
