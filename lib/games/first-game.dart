@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:joker/components/bg.dart';
 import 'package:joker/logic/first_game_logic.dart';
+import 'package:joker/menu.dart';
 
 class FirstGameScreen extends StatefulWidget {
   const FirstGameScreen({super.key});
@@ -11,6 +12,8 @@ class FirstGameScreen extends StatefulWidget {
 }
 
 class _FirstGameScreenState extends State<FirstGameScreen> {
+  var goodMoves = 0;
+
   String hoursString = '00',
       minuteString = '00',
       secondString = '00';
@@ -94,6 +97,75 @@ class _FirstGameScreenState extends State<FirstGameScreen> {
         hoursString = "0" + hoursString;
       }
     });
+  }
+
+  void win() {
+    if(goodMoves == 8) {
+      showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+                backgroundColor: Colors.transparent,
+                content: Stack(
+                  children: [
+                    Positioned(
+                      top: 350,
+                      child:  Container(
+                        height: MediaQuery.of(context).size.height / 5,
+                        width: MediaQuery.of(context).size.width / 2,
+                        decoration: const BoxDecoration(
+                            image: DecorationImage(
+                                image: AssetImage(
+                                  "assets/images/fon_win.png",
+                                ),
+                                fit: BoxFit.fill
+                            )
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      top: 10,
+                      right: 20,
+                      left: 1,
+                      bottom: 40,
+                      child: Image.asset("assets/images/you_win.png"),
+                    ),
+                    Positioned(
+                        top: 500,
+                        right: 10,
+                        left: 10,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            InkWell(
+                              child: Image.asset(
+                                "assets/images/undo_button.png", height: 40,),
+                              onTap: () {
+                                _gameInfo.initGame();
+                                goodMoves = 0;
+                                moves = 0;
+                                resetTimer();
+                                startTimer();
+                                Navigator.pop(context);
+                              },
+                            ),
+                            InkWell(
+                              onTap: () => Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) =>
+                                const MenuScreen()),),
+                              child: Image.asset(
+                                "assets/images/menu_button.png", height: 40,),
+                            )
+                          ],
+                        )
+                    )
+                  ],
+                )
+            );
+          }
+      );
+    }
   }
 
 
@@ -180,6 +252,10 @@ class _FirstGameScreenState extends State<FirstGameScreen> {
                           if(_gameInfo.matchCheck.length == 2) {
                             if(_gameInfo.matchCheck[0].values.first ==
                                 _gameInfo.matchCheck[1].values.first) {
+                              goodMoves += 1;
+                              if(goodMoves == 8) {
+                                win();
+                              }
                               _gameInfo.matchCheck.clear();
                             } else {
                               Future.delayed(
@@ -235,6 +311,7 @@ class _FirstGameScreenState extends State<FirstGameScreen> {
                       onTap: () {
                         setState(() {
                           moves = 0;
+                          goodMoves = 0;
                           resetTimer();
                           startTimer();
                           _gameInfo.initGame();

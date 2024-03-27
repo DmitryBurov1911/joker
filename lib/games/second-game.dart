@@ -1,7 +1,9 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:joker/components/bg.dart';
+import 'package:joker/components/grid-button.dart';
 import 'package:joker/logic/first_game_logic.dart';
+import 'package:joker/menu.dart';
 
 class SecondGameScreen extends StatefulWidget {
   const SecondGameScreen({super.key});
@@ -12,6 +14,7 @@ class SecondGameScreen extends StatefulWidget {
 
 class _SecondGameScreenState extends State<SecondGameScreen> {
   var numbers = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
+  bool isActive = false;
 
   String hoursString = '00',
       minuteString = '00',
@@ -98,7 +101,6 @@ class _SecondGameScreenState extends State<SecondGameScreen> {
     });
   }
 
-
   int moves = 0;
   final FirstGameInfo _gameInfo = FirstGameInfo();
 
@@ -161,63 +163,35 @@ class _SecondGameScreenState extends State<SecondGameScreen> {
                     )
                   ],
                 ),
-                SizedBox(
-                  height: theme.height / 2,
-                  width: theme.width,
-                  child: GridView.builder(
-                      physics: const NeverScrollableScrollPhysics(),
-                      gridDelegate:
-                      const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 4
-                      ),
-                      itemCount: _gameInfo.picGame!.length,
-                      itemBuilder: (context, i) {
-                        return GestureDetector(
-                            onTap: () {
-                              setState(() {
-                                moves++;
-                                _gameInfo.picGame![i] = _gameInfo.slotList[i];
-                                _gameInfo.matchCheck.add
-                                  ({i: _gameInfo.slotList[i]});
-                              });
-                              if(_gameInfo.matchCheck.length == 2) {
-                                if(_gameInfo.matchCheck[0].values.first ==
-                                    _gameInfo.matchCheck[1].values.first) {
-                                  _gameInfo.matchCheck.clear();
-                                } else {
-                                  Future.delayed(
-                                      const Duration(milliseconds: 500),
-                                          () {
-                                        setState(() {
-                                          _gameInfo.picGame![_gameInfo
-                                              .matchCheck[0].keys.first] =
-                                              _gameInfo.slotEmpty;
-                                          _gameInfo.picGame![_gameInfo
-                                              .matchCheck[1].keys.first] =
-                                              _gameInfo.slotEmpty;
-                                          _gameInfo.matchCheck.clear();
-                                        });
-                                      }
-                                  );
-                                }
-                              }
-                            },
-                            child: Padding(
-                              padding: const EdgeInsets.all(5),
-                              child: Container(
-                                padding: const EdgeInsets.all(16),
-                                decoration: BoxDecoration(
-                                    image: DecorationImage(
-                                      image: AssetImage(
-                                        _gameInfo.picGame![i],
-                                      ),
-                                    )
-                                ),
-                              ),
-                            )
-                        );
-                      }
-                  ),
+                Stack(
+                  alignment: Alignment.topCenter,
+                  children: [
+                    Image.asset("assets/images/fon.png",),
+                    Positioned(
+                      top: 15,
+                      child: SizedBox(
+                        height: theme.height / 2,
+                        width: theme.width / 1.5,
+                        child: GridView.builder(
+                            physics: const NeverScrollableScrollPhysics(),
+                            gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: 4
+                            ),
+                            itemCount: numbers.length,
+                            itemBuilder: (context, i) {
+                              return numbers[i] != 0 ? GridButton(
+                                numbers[i].toString(),
+                                  () {
+                                    clickGrid(i);
+                                  },
+                              ): const SizedBox.shrink();
+                            }
+                          ),
+                        ),
+                    )
+
+                  ],
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -254,5 +228,98 @@ class _SecondGameScreenState extends State<SecondGameScreen> {
         ],
       ),
     );
+  }
+
+  void clickGrid(i) {
+    if (i - 1 >= 0 && numbers[i - 1] == 0 && i % 4 != 0 ||
+        i + 1 < 16 && numbers[i + 1] == 0 && (i + 1) % 4 != 0 ||
+        (i - 4 >= 0 && numbers[i - 4] == 0) ||
+        (i + 4 < 16 && numbers[i + 4] == 0)) {
+      setState(() {
+        moves++;
+        numbers[numbers.indexOf(0)] = numbers[i];
+        numbers[i] = 0;
+      });
+    }
+    checkWin();
+  }
+
+  bool isSorted(List list) {
+    int prev = list.first;
+    for (var i = 1; i < list.length - 1; i++) {
+      int next = list[i];
+      if (prev > next) return false;
+      prev = next;
+    }
+    return true;
+  }
+
+  void checkWin() {
+    if (isSorted(numbers)) {
+      isActive = false;
+      showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+                backgroundColor: Colors.transparent,
+                content: Stack(
+                  children: [
+                    Positioned(
+                      top: 350,
+                      child:  Container(
+                        height: MediaQuery.of(context).size.height / 5,
+                        width: MediaQuery.of(context).size.width / 1,
+                        decoration: const BoxDecoration(
+                            image: DecorationImage(
+                                image: AssetImage(
+                                  "assets/images/fon_win.png",
+                                ),
+                                fit: BoxFit.fill
+                            )
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      top: 10,
+                      right: 10,
+                      left: 10,
+                      bottom: 40,
+                      child: Image.asset("assets/images/you_win.png"),
+                    ),
+                    Positioned(
+                        top: 500,
+                        right: 10,
+                        left: 10,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            InkWell(
+                              child: Image.asset(
+                                "assets/images/undo_button.png", height: 40,),
+                              onTap: () {
+                                resetTimer();
+                                resetTimer();
+                                startTimer();
+                                _gameInfo.initGame();
+                                Navigator.pop(context);
+                              },
+                            ),
+                            InkWell(
+                              onTap: () => Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) =>
+                                const MenuScreen()),),
+                              child: Image.asset(
+                                "assets/images/menu_button.png", height: 40,),
+                            )
+                          ],
+                        )
+                    )
+                  ],
+                )
+            );
+          }
+      );
+    }
   }
 }
