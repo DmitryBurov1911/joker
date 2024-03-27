@@ -298,7 +298,6 @@ class _SecondGameScreenState extends State<SecondGameScreen> {
                                 "assets/images/undo_button.png", height: 40,),
                               onTap: () {
                                 _gameInfo.initGame();
-                                goodMoves = 0;
                                 moves = 0;
                                 resetTimer();
                                 startTimer();

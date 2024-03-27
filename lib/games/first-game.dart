@@ -12,6 +12,7 @@ class FirstGameScreen extends StatefulWidget {
 }
 
 class _FirstGameScreenState extends State<FirstGameScreen> {
+  bool statusPause = true;
   var goodMoves = 0;
 
   String hoursString = '00',
@@ -231,7 +232,7 @@ class _FirstGameScreenState extends State<FirstGameScreen> {
                   ],
                 ),
                 SizedBox(
-                  height: theme.height / 2,
+                  height: theme.height /1.8,
                   width: theme.width,
                   child: GridView.builder(
                     physics: const NeverScrollableScrollPhysics(),
@@ -241,7 +242,7 @@ class _FirstGameScreenState extends State<FirstGameScreen> {
                     ),
                     itemCount: _gameInfo.picGame!.length,
                     itemBuilder: (context, i) {
-                      return GestureDetector(
+                      return statusPause ? GestureDetector(
                         onTap: () {
                           setState(() {
                             moves++;
@@ -288,19 +289,48 @@ class _FirstGameScreenState extends State<FirstGameScreen> {
                             ),
                           ),
                         )
-                      );
+                      ) :
+                      Padding(
+                        padding: const EdgeInsets.all(5),
+                        child: Container(
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                              image: DecorationImage(
+                                image: AssetImage(
+                                  _gameInfo.picGame![i],
+                                ),
+                              )
+                          ),
+                        ),
+                      )
+                      ;
                     }
                   ),
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    InkWell(
+                    statusPause ? InkWell(
                       onTap: () {
+                        statusPause = false;
                         pauseTimer();
+                        setState(() {
+
+                        });
                       },
                       child: Image
                           .asset("assets/images/pause_button.png", height: 50,),
+                    ) :
+                    InkWell(
+                      onTap: () {
+                        startTimer();
+                        statusPause = true;
+                        setState(() {
+
+                        });
+                      },
+                      child: Image
+                          .asset("assets/images/play_button.png", height: 50,),
                     ),
                     InkWell(
                       onTap: () => Navigator.pop(context),
