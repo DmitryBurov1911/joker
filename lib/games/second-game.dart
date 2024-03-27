@@ -242,8 +242,8 @@ class _SecondGameScreenState extends State<SecondGameScreen> {
                     InkWell(
                       onTap: () {
                         setState(() {
-                          moves = 0;
                           if(statusPause) {
+                            moves = 0;
                             resetTimer();
                             startTimer();
                           }

@@ -340,9 +340,9 @@ class _FirstGameScreenState extends State<FirstGameScreen> {
                     InkWell(
                       onTap: () {
                         setState(() {
-                          moves = 0;
-                          goodMoves = 0;
                           if(statusPause) {
+                            moves = 0;
+                            goodMoves = 0;
                             resetTimer();
                             startTimer();
                           }
