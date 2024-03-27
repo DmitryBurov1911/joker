@@ -14,6 +14,7 @@ class SecondGameScreen extends StatefulWidget {
 
 class _SecondGameScreenState extends State<SecondGameScreen> {
   var numbers = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
+  bool statusPause = true;
   bool isActive = false;
 
   String hoursString = '00',
@@ -172,7 +173,7 @@ class _SecondGameScreenState extends State<SecondGameScreen> {
                       child: SizedBox(
                         height: theme.height / 2,
                         width: theme.width / 1.5,
-                        child: GridView.builder(
+                        child: statusPause ? GridView.builder(
                             physics: const NeverScrollableScrollPhysics(),
                             gridDelegate:
                             const SliverGridDelegateWithFixedCrossAxisCount(
@@ -187,7 +188,22 @@ class _SecondGameScreenState extends State<SecondGameScreen> {
                                   },
                               ): const SizedBox.shrink();
                             }
-                          ),
+                          ) : GridView.builder(
+                            physics: const NeverScrollableScrollPhysics(),
+                            gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: 4
+                            ),
+                            itemCount: numbers.length,
+                            itemBuilder: (context, i) {
+                              return numbers[i] != 0 ? GridButton(
+                                numbers[i].toString(),
+                                    () {
+                                  () {};
+                                },
+                              ): const SizedBox.shrink();
+                            }
+                        ),
                         ),
                     )
 
@@ -196,12 +212,27 @@ class _SecondGameScreenState extends State<SecondGameScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    InkWell(
+                    statusPause ? InkWell(
                       onTap: () {
+                        statusPause = false;
                         pauseTimer();
+                        setState(() {
+
+                        });
                       },
                       child: Image
                           .asset("assets/images/pause_button.png", height: 50,),
+                    ) :
+                    InkWell(
+                      onTap: () {
+                        startTimer();
+                        statusPause = true;
+                        setState(() {
+
+                        });
+                      },
+                      child: Image
+                          .asset("assets/images/play_button.png", height: 50,),
                     ),
                     InkWell(
                       onTap: () => Navigator.pop(context),
