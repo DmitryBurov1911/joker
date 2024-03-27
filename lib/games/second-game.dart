@@ -243,14 +243,16 @@ class _SecondGameScreenState extends State<SecondGameScreen> {
                       onTap: () {
                         setState(() {
                           moves = 0;
-                          resetTimer();
-                          startTimer();
+                          if(statusPause) {
+                            resetTimer();
+                            startTimer();
+                          }
                           _gameInfo.initGame();
                         });
                       },
                       child: Image
                           .asset("assets/images/undo_button.png", height: 50,),
-                    )
+                    ),
                   ],
                 )
               ],
@@ -331,7 +333,6 @@ class _SecondGameScreenState extends State<SecondGameScreen> {
                                 _gameInfo.initGame();
                                 moves = 0;
                                 resetTimer();
-                                startTimer();
                                 Navigator.pop(context);
                               },
                             ),

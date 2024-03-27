@@ -342,8 +342,10 @@ class _FirstGameScreenState extends State<FirstGameScreen> {
                         setState(() {
                           moves = 0;
                           goodMoves = 0;
-                          resetTimer();
-                          startTimer();
+                          if(statusPause) {
+                            resetTimer();
+                            startTimer();
+                          }
                           _gameInfo.initGame();
                         });
                       },
